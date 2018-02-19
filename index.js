@@ -4,7 +4,7 @@ const mongoose = require('mongoose')
 const methodOverride = require('method-override');
 const expressSanitizer = require('express-sanitizer');
 
-// const config = require('./config'); //if development use must use config.js 
+const config = require('./config'); //if development use must use config.js 
 const app = express();
 
 const PORT = process.env.PORT || 5000
