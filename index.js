@@ -1,6 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose')
+const methodOverride = require('method-override');
+const expressSanitizer = require('express-sanitizer');
 
 // const config = require('./config'); //if development use must use config.js 
 const app = express();
@@ -39,6 +41,12 @@ app.use(express.static('public'));
 //config urlencode
 app.use(bodyParser.urlencoded({ extended: true}));
 
+//express Sanitizer ใช้ สำหรับกรอง code เช่น <script></script> ไว้หลัง bodyParser
+app.use(expressSanitizer());
+
+// USER METHOD OVERRIDE
+app.use(methodOverride('_method'));
+
 //----------------------------------------------------------------
 
 //---------------- Setup Model AND SCHEMA IN MONGODB-------------------------
@@ -64,6 +72,7 @@ const Blog = mongoose.model('Blog', blogSchema);
 //--------------------------------------------------------------
 
 //------------------- RESTFUL ROUTES----------------------------
+
 app.get('/', (req, res) => {
     res.redirect('/blogs');
 });
@@ -87,7 +96,16 @@ app.get('/blogs/new', (req, res) => {
 
 //CREATE ROUTE
 app.post('/blogs', (req,res) => {
+
+    //console.log(req.body);
+
+    //เอา script ใน req.body.blog.body ออก
     //create blog
+    req.body.blog.body = req.sanitize(req.body.blog.body);
+    /*
+    console.log('===============');
+    console.log(req.body);
+    */
     Blog.create(req.body.blog, (err, newBlog) => {
        if(err) {
            res.render('new');
@@ -108,6 +126,43 @@ app.get('/blogs/:id', (req, res) => {
             res.render('show', {blog: foundBlog});
         }
     });
+});
+
+// EDIT ROUTE
+    // Show Route Edit page
+app.get('/blogs/:id/edit', (req, res) => {
+    Blog.findById(req.params.id, (err, foundBlog) => {
+        if(err) {
+            res.redirect('/blogs');
+        } else {
+            res.render('edit', {blog: foundBlog});
+        }
+    });
+});
+
+// UPDATE ROUTE
+app.put('/blogs/:id', (req, res) => {
+    req.body.blog.body = req.sanitize(req.body.blog.body);
+    Blog.findByIdAndUpdate(req.params.id, req.body.blog, (err, updateBlog) => {
+        if (err) {
+            res.redirect('/blogs');
+        } else {
+            res.redirect(`/blogs/${req.params.id}`);
+        }
+    });
+});
+
+// DELETE ROUTE
+app.delete('/blogs/:id', (req, res) => {
+    //destroy blog
+    Blog.findByIdAndRemove(req.params.id, (err) => {
+        //redirect blogs
+        if (err) {
+            res.redirect('/blogs');
+        } else {
+            res.redirect('/blogs');
+        }
+    })  
 });
 //--------------------------------------------------------------
 

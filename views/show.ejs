@@ -11,6 +11,10 @@
                 <%/* -  ข้อความที่อ่านคำสั่ง tag html ได้ */%>
                 <p><%- blog.body %></p>    
             </div>
+            <a class="ui orange basic button" href="/blogs/<%= blog._id %>/edit">Edit</a>
+            <form id="delete" action="/blogs/<%= blog._id%>?_method=DELETE" method="POST">
+                <button class="ui red basic button" type="submit">Delete</button> 
+            </form>
         </div>
     </div>
 </div>
