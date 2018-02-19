@@ -11,10 +11,10 @@ const PORT = process.env.PORT || 5000
 
 //input user name and password forn config
 
-const DB_username = config.mongoDB.username;
-const DB_password = config.mongoDB.password;
+const DB_username = config.mongoDB.username || process.env.DBusername;
+const DB_password = config.mongoDB.password || process.env.DBpassword;
 
-// mongoose.connect(`mongodb://${DB_username}:${DB_password}@ds249605.mlab.com:49605/blogappta`);
+mongoose.connect(`mongodb://${DB_username}:${DB_password}@ds249605.mlab.com:49605/blogappta`);
 
 const db = mongoose.connection;
 
