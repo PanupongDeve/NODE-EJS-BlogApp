@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose')
 
-// const config = require('./config'); //if development use must use config.js
+// const config = require('./config'); //if development use must use config.js 
 const app = express();
 
 const PORT = process.env.PORT || 5000
@@ -64,13 +64,13 @@ const Blog = mongoose.model('Blog', blogSchema);
 //--------------------------------------------------------------
 
 //------------------- RESTFUL ROUTES----------------------------
-app.get('/', (req,res) => {
+app.get('/', (req, res) => {
     res.redirect('/blogs');
 });
 
 // INDEX ROUTE
-app.get('/blogs', (req,res) => {
-    Blog.find({}, (err,blogs) => {
+app.get('/blogs', (req, res) => {
+    Blog.find({}, (err, blogs) => {
         if(err) {
             console.log('ERROR!');
         } else {
@@ -81,7 +81,7 @@ app.get('/blogs', (req,res) => {
 });
 
 //NEW ROUTE
-app.get('/blogs/new', (req,res) => {
+app.get('/blogs/new', (req, res) => {
     res.render("new");
 })
 
@@ -97,6 +97,17 @@ app.post('/blogs', (req,res) => {
        }
     });
     
+});
+
+// SHOW ROUTE
+app.get('/blogs/:id', (req, res) => {
+    Blog.findById(req.params.id, (err, foundBlog) => {
+        if(err) {
+            res.redirect('/blogs');
+        } else {
+            res.render('show', {blog: foundBlog});
+        }
+    });
 });
 //--------------------------------------------------------------
 
